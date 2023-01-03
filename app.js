@@ -1,11 +1,22 @@
 import express from 'express'
 import cors from 'cors'
+import mongoose from "mongoose";
+import bodyParser from 'body-parser'
 
 const app = express()
 const PORT = 8001
 
+import UserRoutes from "./users/user.routes";
+
 // cors
 app.use(cors())
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({extended: false}))
+// parse application/json
+app.use(bodyParser.json())
+
+mongoose.set('strictQuery', false)
 
 app.get('/', (req,res) => {
     res.status(200).json({
@@ -13,6 +24,16 @@ app.get('/', (req,res) => {
     })
 })
 
-app.listen(PORT, () => {
-    console.log("server started on port 8001")
+app.use('/auth', UserRoutes)
+
+mongoose.connect("mongodb+srv://superiorkid:root@cluster0.mu9kd.mongodb.net/mern-auth?retryWrites=true&w=majority", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then((res) => {
+    app.listen(PORT, () => {
+        console.log("Database connected successfully")
+        console.log("server started on port 8001")
+    })
+}).catch((err) => {
+    console.log("Error connect to database.")
 })
