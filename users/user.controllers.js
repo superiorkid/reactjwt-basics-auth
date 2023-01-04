@@ -33,9 +33,7 @@ export const signup = async (req, res) => {
             return res.status(409).json({
                 status: "CONFLICT",
                 code: 409,
-                data: {
-                    message: "Username already registered",
-                }
+                message: "Username already registered",
             })
         }
 
@@ -45,9 +43,7 @@ export const signup = async (req, res) => {
             return res.status(409).json({
                 status: "CONFLICT",
                 code: 409,
-                data: {
-                    message: "Email already registered",
-                }
+                message: "Email already registered",
             })
         }
 
@@ -65,19 +61,15 @@ export const signup = async (req, res) => {
         res.status(201).json({
             status: "CREATED",
             code: 201,
-            data: {
-                message: "User created successfully",
-            }
+            message: "User created successfully",
         })
 
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            status: "INTERNAL SERVER ERROR",
+            status: "INTERNAL_SERVER_ERROR",
             code: 500,
-            data: {
-                message: "Error creating user",
-            }
+            message: "Error creating user",
         })
     }
 }
@@ -90,11 +82,9 @@ export const signin = async (req, res) => {
         const user = await UserModels.findOne({email})
         if (!user) {
             return res.status(404).json({
-                status: "NOT FOUND",
+                status: "NOT_FOUND",
                 code: 404,
-                data: {
-                    message: "User does not exists"
-                }
+                message: "User does not exists"
             })
         }
 
@@ -104,9 +94,7 @@ export const signin = async (req, res) => {
             return res.status(401).json({
                 status: "UNAUTHORIZED",
                 code: 401,
-                data: {
-                    message: "Password is incorrect"
-                }
+                message: "Password is incorrect"
             })
         }
 
@@ -118,8 +106,8 @@ export const signin = async (req, res) => {
         res.status(200).json({
             status: "OK",
             code: 200,
+            message: "Logged in successfully",
             data: {
-                message: "Logged in successfully",
                 token
             }
         })
@@ -128,10 +116,8 @@ export const signin = async (req, res) => {
         console.log(error)
         res.status(500).json({
             code: 500,
-            status: "INTERNAL SERVER ERROR",
-            data: {
-                message: "Error logging in"
-            }
+            status: "INTERNAL_SERVER_ERROR",
+            message: "Error logging in"
         })
     }
 }
