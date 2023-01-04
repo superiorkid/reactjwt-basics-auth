@@ -1,28 +1,24 @@
-import React, {useEffect, useState} from "react";
-import axios from "axios";
+import React from "react";
+import Register from './pages/Register'
+import Login from './pages/Login'
+import NotFound from "./pages/404.jsx";
+import InternalServerError from "./pages/500.jsx";
+import Homepage from "./pages/ Homepage.jsx";
+import {Routes, Route} from 'react-router-dom'
+import {Toaster} from "react-hot-toast";
 
 const App = () => {
-    const [message, setMessage] = useState({})
-
-    useEffect(() => {
-        const msg = async () => {
-            await axios.get('http://localhost:8001').then((res) => {
-                setMessage(res.data)
-                console.log(message)
-                console.log(typeof message)
-            }).catch((err) => {
-                console.log(err)
-            })
-        }
-
-        msg()
-    })
-
     return (
-        <div>
-            <h2>Hello from frontend</h2>
-            {message.message}
-        </div>
+        <>
+            <Toaster position="top-center" reverseOrder={false} />
+            <Routes>
+                <Route path="/" element={<Homepage/>} />
+                <Route path="/register" element={<Register/>} />
+                <Route path="/login" element={<Login/>} />
+                <Route path="/404" element={<NotFound/>} />
+                <Route path="/500" element={<InternalServerError/>} />
+            </Routes>
+        </>
     )
 }
 export default App
