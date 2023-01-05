@@ -22,7 +22,7 @@ const Register = () => {
                 password: newUser.password
             }).then((res) => {
                 toast.success(res.data.message)
-                toast.success("Now you can login")
+                toast("...redirecting to login page")
                 navigate('/login')
             }).catch((err) => {
                 console.log(err)

@@ -12,7 +12,8 @@ require('dotenv').config()
 *
 * {
 *   status: "OK",
-*   code: 200
+*   code: 200,
+*   message: "lorem ipsum",
 *   data: {
 *       username
 *       email
@@ -24,9 +25,8 @@ require('dotenv').config()
 * */
 
 export const signup = async (req, res) => {
+    const {username, email, password} = req.body
     try {
-        const {username, email, password} = req.body
-
         // check username exists
         const usernameExists = await UserModels.findOne({username})
         if (usernameExists) {
@@ -75,9 +75,8 @@ export const signup = async (req, res) => {
 }
 
 export const signin = async (req, res) => {
+    const {email, password} = req.body
     try {
-        const {email, password} = req.body
-
         // check if user exists
         const user = await UserModels.findOne({email})
         if (!user) {
@@ -107,7 +106,7 @@ export const signin = async (req, res) => {
             status: "OK",
             code: 200,
             message: "Logged in successfully",
-            data: {
+            body: {
                 token
             }
         })
@@ -118,6 +117,35 @@ export const signin = async (req, res) => {
             code: 500,
             status: "INTERNAL_SERVER_ERROR",
             message: "Error logging in"
+        })
+    }
+}
+
+export const userInfo = async (req, res) => {
+    try {
+        const user = await UserModels.findById({_id: req.body.userId})
+        if (!user) {
+            return res.status(404).json({
+                status: "NOT_FOUND",
+                code: 404,
+                message: "User does not exists"
+            })
+        }
+
+        res.status(200).json({
+            status: "OK",
+            code: 200,
+            data: {
+                username: user.username,
+                email: user.email
+            }
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: "INTERNAL_SERVER_ERROR",
+            code: 500,
+            message: "Error getting user info",
+            error
         })
     }
 }

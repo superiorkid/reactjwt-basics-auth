@@ -20,6 +20,7 @@ const Login = () => {
                 password: user.password
             }).then((res) => {
                 toast.success(res.data.message)
+                localStorage.setItem("token", res.data.body.token)
                 navigate('/')
             }).catch((err) => {
                 const {data} = err.response
