@@ -4,6 +4,8 @@ import {Link} from "react-router-dom";
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
 import toast from 'react-hot-toast'
+import Spinners from "../components/Spinners.jsx";
+
 
 const Login = () => {
     const navigate = useNavigate()
@@ -11,9 +13,11 @@ const Login = () => {
         email: "",
         password: ""
     })
+    const [loading, setLoading] = useState(false)
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
+        setLoading(true)
         try {
             await axios.post('http://localhost:8001/auth/login', {
                 email: user.email,
@@ -21,12 +25,14 @@ const Login = () => {
             }).then((res) => {
                 toast.success(res.data.message)
                 localStorage.setItem("token", res.data.body.token)
+                setLoading(false)
                 navigate('/')
             }).catch((err) => {
                 const {data} = err.response
                 console.log(err)
                 toast.error(data.message)
                 setUser({email: "", password: ""})
+                setLoading(false)
             })
         } catch (error) {
             navigate('/500')
@@ -43,11 +49,14 @@ const Login = () => {
 
     return (
         <Fragment>
-            <Container className="w-50 p-5">
-                <Card>
-                    <Card.Header as="h3" className="text-center p-3">Login Form</Card.Header>
-                    <Form onSubmit={onSubmitHandler}>
-                        <Card.Body>
+            {loading ? (
+               <Spinners loading={loading} />
+            ): (
+                <Container className="w-50 p-5">
+                    <Card>
+                        <Card.Header as="h3" className="text-center p-3">Login Form</Card.Header>
+                        <Form onSubmit={onSubmitHandler}>
+                            <Card.Body>
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <Form.Label>Email address</Form.Label>
                                     <Form.Control type="email" placeholder="Enter email" name="email" onChange={inputChangeHandler} value={user.email} />
@@ -57,20 +66,21 @@ const Login = () => {
                                     <Form.Label>Password</Form.Label>
                                     <Form.Control type="password" placeholder="Password" name="password" onChange={inputChangeHandler} value={user.password} />
                                 </Form.Group>
-                        </Card.Body>
-                        <Card.Footer>
-                            <div className="d-grid gap-2">
-                                <Button variant="primary" type="submit" size="md">
-                                    Login
-                                </Button>
-                            </div>
-                            <div className="m-2">
-                                <Card.Text>Don't Have an account? <Link to="/register">Register</Link></Card.Text>
-                            </div>
-                        </Card.Footer>
-                    </Form>
-                </Card>
-            </Container>
+                            </Card.Body>
+                            <Card.Footer>
+                                <div className="d-grid gap-2">
+                                    <Button variant="primary" type="submit" size="md">
+                                        Login
+                                    </Button>
+                                </div>
+                                <div className="m-2">
+                                    <Card.Text>Don't Have an account? <Link to="/register">Register</Link></Card.Text>
+                                </div>
+                            </Card.Footer>
+                        </Form>
+                    </Card>
+                </Container>
+            )}
         </Fragment>
     )
 }

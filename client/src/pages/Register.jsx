@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
+import Spinners from "../components/Spinners.jsx";
 
 const Register = () => {
     const navigate = useNavigate()
@@ -12,9 +13,11 @@ const Register = () => {
         email: "",
         password: ""
     })
+    const [loading, setLoading] = useState(false)
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
+        setLoading(true)
         try {
             await axios.post("http://localhost:8001/auth/register", {
                 username: newUser.username,
@@ -23,11 +26,13 @@ const Register = () => {
             }).then((res) => {
                 toast.success(res.data.message)
                 toast("...redirecting to login page")
+                setLoading(false)
                 navigate('/login')
             }).catch((err) => {
                 console.log(err)
                 const {data} = err.response
                 toast.error(data.message)
+                setLoading(false)
                 setNewUser({username: "", email: "", password: ""})
             })
         } catch (error) {
@@ -42,11 +47,14 @@ const Register = () => {
 
     return (
         <Fragment>
-            <Container className="w-50 p-5">
-                <Card>
-                    <Card.Header as="h3" className="text-center p-3">Register Form</Card.Header>
-                    <Form onSubmit={onSubmitHandler}>
-                        <Card.Body>
+            {loading ? (
+                <Spinners loading={loading} />
+            ) : (
+                <Container className="w-50 p-5">
+                    <Card>
+                        <Card.Header as="h3" className="text-center p-3">Register Form</Card.Header>
+                        <Form onSubmit={onSubmitHandler}>
+                            <Card.Body>
                                 <Form.Group className="mb-3" controlId="formBasicUsername">
                                     <Form.Label>Username</Form.Label>
                                     <Form.Control type="text" placeholder="Enter username" name="username" value={newUser.username} onChange={onChangeHandler} />
@@ -62,20 +70,21 @@ const Register = () => {
                                     <Form.Control type="password" placeholder="Password" name="password" value={newUser.password} onChange={onChangeHandler} />
                                 </Form.Group>
 
-                        </Card.Body>
-                        <Card.Footer>
-                            <div className="d-grid gap-2">
-                                <Button variant="primary" type="submit" size="md">
-                                    Register
-                                </Button>
-                            </div>
-                            <div className="m-2">
-                                <Card.Text>Have an account? <Link to="/login">Logged in</Link></Card.Text>
-                            </div>
-                        </Card.Footer>
-                    </Form>
-                </Card>
-            </Container>
+                            </Card.Body>
+                            <Card.Footer>
+                                <div className="d-grid gap-2">
+                                    <Button variant="primary" type="submit" size="md">
+                                        Register
+                                    </Button>
+                                </div>
+                                <div className="m-2">
+                                    <Card.Text>Have an account? <Link to="/login">Logged in</Link></Card.Text>
+                                </div>
+                            </Card.Footer>
+                        </Form>
+                    </Card>
+                </Container>
+            )}
         </Fragment>
     )
 }
