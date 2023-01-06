@@ -5,19 +5,22 @@ import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
 import toast from 'react-hot-toast'
 import Spinners from "../components/Spinners.jsx";
+import {useDispatch, useSelector} from "react-redux";
+import {changeLoadingStatusByAmount} from "../redux/loadingSlice.js";
 
 
 const Login = () => {
+    const dispatch = useDispatch()
+    const loading = useSelector((state) => state.loading.showSpinner)
     const navigate = useNavigate()
     const [user, setUser] = useState({
         email: "",
         password: ""
     })
-    const [loading, setLoading] = useState(false)
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        setLoading(true)
+        dispatch(changeLoadingStatusByAmount(true))
         try {
             await axios.post('http://localhost:8001/auth/login', {
                 email: user.email,
@@ -25,22 +28,20 @@ const Login = () => {
             }).then((res) => {
                 toast.success(res.data.message)
                 localStorage.setItem("token", res.data.body.token)
-                setLoading(false)
+                dispatch(changeLoadingStatusByAmount(false))
                 navigate('/')
             }).catch((err) => {
                 const {data} = err.response
                 console.log(err)
                 toast.error(data.message)
+                dispatch(changeLoadingStatusByAmount(false))
                 setUser({email: "", password: ""})
-                setLoading(false)
             })
         } catch (error) {
             navigate('/500')
         }
 
     }
-
-
 
     const inputChangeHandler = (e) => {
         const {name, value} = e.target
