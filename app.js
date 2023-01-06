@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import mongoose from "mongoose";
 import bodyParser from 'body-parser'
+require('dotenv').config()
 
 const app = express()
 const PORT = 8001
@@ -26,7 +27,7 @@ app.get('/', (req,res) => {
 
 app.use('/auth', UserRoutes)
 
-mongoose.connect("mongodb+srv://superiorkid:root@cluster0.mu9kd.mongodb.net/mern-auth?retryWrites=true&w=majority", {
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then((res) => {
